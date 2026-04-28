@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard - Price Manager{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Product Dashboard</h2>
+    <a href="{{ url_for('products.lookup') }}" class="btn btn-primary">Scan Barcode</a>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Total Products</h5>
+                <p class="display-6">{{ products | length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-hover table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Barcode</th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Current Price</th>
+            <th>Last Updated</th>
+            {% if current_user.is_owner %}<th>Actions</th>{% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td><code>{{ product.barcode }}</code></td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.brand or '-' }}</td>
+            <td>
+                {% if product.current_price is not none %}
+                <strong>${{ '%.2f' % product.current_price }}</strong>
+                {% else %}
+                <span class="text-muted">Not set</span>
+                {% endif %}
+            </td>
+            <td>{{ product.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            {% if current_user.is_owner %}
+            <td>
+                <a href="{{ url_for('prices.edit', product_id=product.id) }}" class="btn btn-sm btn-warning">Edit Price</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No products yet. Start by scanning a barcode.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

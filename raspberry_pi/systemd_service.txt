@@ -1,0 +1,18 @@
+[Unit]
+Description=Barcode Price Manager
+After=network.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/barcode-price-manager
+Environment="FLASK_ENV=production"
+ExecStart=/home/pi/barcode-price-manager/venv/bin/gunicorn \
+    --workers 2 \
+    --bind 0.0.0.0:5000 \
+    --timeout 60 \
+    run:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

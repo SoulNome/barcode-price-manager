@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Price History{% endblock %}
+{% block content %}
+<h2 class="mb-4">Price Change History</h2>
+
+<table class="table table-hover table-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Date & Time</th>
+            <th>Product</th>
+            <th>Barcode</th>
+            <th>Old Price</th>
+            <th>New Price</th>
+            <th>Changed By</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in history.items %}
+        <tr>
+            <td>{{ record.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ record.product.name if record.product else 'N/A' }}</td>
+            <td><code>{{ record.product.barcode if record.product else 'N/A' }}</code></td>
+            <td>{% if record.old_price is not none %}${{ '%.2f' % record.old_price }}{% else %}<span class="text-muted">-</span>{% endif %}</td>
+            <td><strong>${{ '%.2f' % record.new_price }}</strong></td>
+            <td>{{ record.changed_by.username if record.changed_by else 'N/A' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted">No price changes recorded yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if history.pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        {% if history.has_prev %}
+        <li class="page-item"><a class="page-link" href="?page={{ history.prev_num }}">Previous</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Page {{ history.page }} of {{ history.pages }}</span></li>
+        {% if history.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ history.next_num }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

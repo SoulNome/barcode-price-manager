@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Edit Price - {{ product.name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-warning">
+                <h4 class="mb-0">Edit Price</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Product:</strong> {{ product.name }}</p>
+                <p><strong>Barcode:</strong> <code>{{ product.barcode }}</code></p>
+                <p><strong>Current Price:</strong>
+                    {% if product.current_price is not none %}
+                    ${{ '%.2f' % product.current_price }}
+                    {% else %}<span class="text-muted">Not set</span>{% endif %}
+                </p>
+
+                <div class="mb-3">
+                    <label for="newPrice" class="form-label fw-bold">New Price ($)</label>
+                    <input type="number" id="newPrice" class="form-control form-control-lg"
+                           step="0.01" min="0" placeholder="0.00" autofocus>
+                </div>
+                <div class="d-grid gap-2">
+                    <button id="saveBtn" class="btn btn-success btn-lg">Save Price</button>
+                    <a href="{{ url_for('products.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+                <div id="feedback" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('saveBtn').addEventListener('click', async () => {
+    const newPrice = document.getElementById('newPrice').value;
+    const feedback = document.getElementById('feedback');
+    if (!newPrice || parseFloat(newPrice) < 0) {
+        feedback.innerHTML = '<div class="alert alert-warning">Enter a valid price.</div>';
+        return;
+    }
+
+    try {
+        const resp = await fetch('/prices/update', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({product_id: {{ product.id }}, new_price: parseFloat(newPrice)})
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+            feedback.innerHTML = '<div class="alert alert-success">Price updated successfully!</div>';
+            setTimeout(() => window.location.href = '/products/dashboard', 1500);
+        } else {
+            feedback.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        }
+    } catch {
+        feedback.innerHTML = '<div class="alert alert-danger">Connection error</div>';
+    }
+});
+
+document.getElementById('newPrice').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('saveBtn').click();
+});
+</script>
+{% endblock %}

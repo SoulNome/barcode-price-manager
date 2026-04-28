@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h2 class="mb-4">Reports & Analytics</h2>
+
+<div class="row" id="summaryCards">
+    <div class="col-md-4">
+        <div class="card text-center mb-3">
+            <div class="card-body">
+                <h5>Total Products</h5>
+                <p class="display-6" id="totalProducts">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center mb-3">
+            <div class="card-body">
+                <h5>Total Price Changes</h5>
+                <p class="display-6" id="totalChanges">-</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+fetch('/reports/summary')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('totalProducts').textContent = data.total_products;
+        document.getElementById('totalChanges').textContent = data.total_price_changes;
+    });
+</script>
+{% endblock %}
