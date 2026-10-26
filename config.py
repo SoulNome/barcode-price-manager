@@ -14,7 +14,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = False
     SESSION_COOKIE_HTTPONLY = True
 
     OPEN_FOOD_FACTS_API = 'https://world.openfoodfacts.org/api/v0/product/'
@@ -35,6 +35,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
+    SESSION_COOKIE_SECURE = True
 
 
 class TestingConfig(Config):

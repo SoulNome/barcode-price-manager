@@ -54,7 +54,11 @@ input.addEventListener('keydown', async (e) => {
                     </div>
                 </div>`;
         } else {
-            result.innerHTML = `<div class="alert alert-danger">${data.error || 'Product not found'}</div>`;
+            let html = `<div class="alert alert-danger">${data.error || 'Product not found'}</div>`;
+            if (data.can_create && data.barcode) {
+                html += `<a href="/products/create?barcode=${encodeURIComponent(data.barcode)}" class="btn btn-secondary">Add Manually</a>`;
+            }
+            result.innerHTML = html;
         }
     } catch {
         result.innerHTML = '<div class="alert alert-danger">Connection error</div>';

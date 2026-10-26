@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Add Product Manually{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0">Add Product Manually</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">This barcode was not found in Open Food Facts. Enter the product details below.</p>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Barcode</label>
+                        <input type="text" name="barcode" class="form-control" value="{{ barcode }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Product Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Arroz Diana 1kg" autofocus required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Brand</label>
+                        <input type="text" name="brand" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-control" placeholder="Optional">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">Save & Set Price</button>
+                        <a href="{{ url_for('products.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

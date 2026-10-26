@@ -3,24 +3,56 @@
 {% block content %}
 <h2 class="mb-4">Reports & Analytics</h2>
 
-<div class="row" id="summaryCards">
-    <div class="col-md-4">
-        <div class="card text-center mb-3">
-            <div class="card-body">
-                <h5>Total Products</h5>
-                <p class="display-6" id="totalProducts">-</p>
+<div class="row mb-4" id="summaryCards">
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body py-2">
+                <h6 class="text-muted">Total Products</h6>
+                <p class="display-6 mb-0" id="totalProducts">-</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-center mb-3">
-            <div class="card-body">
-                <h5>Total Price Changes</h5>
-                <p class="display-6" id="totalChanges">-</p>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body py-2">
+                <h6 class="text-muted">With Price</h6>
+                <p class="display-6 mb-0 text-success" id="withPrice">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body py-2">
+                <h6 class="text-muted">Without Price</h6>
+                <p class="display-6 mb-0 text-warning" id="withoutPrice">-</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body py-2">
+                <h6 class="text-muted">Price Changes</h6>
+                <p class="display-6 mb-0" id="totalChanges">-</p>
             </div>
         </div>
     </div>
 </div>
+
+<h5>Recent Price Changes</h5>
+<table class="table table-sm table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Product</th>
+            <th>Old Price</th>
+            <th>New Price</th>
+            <th>Changed By</th>
+        </tr>
+    </thead>
+    <tbody id="recentChanges">
+        <tr><td colspan="5" class="text-center text-muted">Loading...</td></tr>
+    </tbody>
+</table>
 {% endblock %}
 {% block scripts %}
 <script>
@@ -29,6 +61,22 @@ fetch('/reports/summary')
     .then(data => {
         document.getElementById('totalProducts').textContent = data.total_products;
         document.getElementById('totalChanges').textContent = data.total_price_changes;
+        document.getElementById('withPrice').textContent = data.products_with_price;
+        document.getElementById('withoutPrice').textContent = data.products_without_price;
+
+        const tbody = document.getElementById('recentChanges');
+        if (!data.recent_changes.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No price changes yet.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = data.recent_changes.map(r => `
+            <tr>
+                <td>${r.changed_at.replace('T', ' ').slice(0, 16)}</td>
+                <td>${r.product_name || 'N/A'}</td>
+                <td>${r.old_price != null ? '$' + r.old_price.toFixed(2) : '<span class="text-muted">-</span>'}</td>
+                <td><strong>$${r.new_price.toFixed(2)}</strong></td>
+                <td>${r.user || 'N/A'}</td>
+            </tr>`).join('');
     });
 </script>
 {% endblock %}

@@ -47,3 +47,22 @@ class ProductService:
         db.session.commit()
         CacheService.set(f'product:{barcode}', product)
         return product
+
+    @staticmethod
+    def create_manual(barcode: str, name: str, brand: str = '', category: str = '') -> Product | None:
+        if ProductService.get_product_by_barcode(barcode):
+            return None
+        product = Product(barcode=barcode, name=name, brand=brand, category=category)
+        db.session.add(product)
+        db.session.commit()
+        return product
+
+    @staticmethod
+    def delete_product(product_id: int) -> bool:
+        product = Product.query.get(product_id)
+        if not product:
+            return False
+        db.session.delete(product)
+        db.session.commit()
+        CacheService.delete(f'product:{product.barcode}')
+        return True

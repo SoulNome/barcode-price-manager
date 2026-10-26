@@ -18,6 +18,7 @@
                         {{ current_user.role }}
                     </span>
                 </span>
+                <a href="{{ url_for('products.dashboard') }}" class="btn btn-sm btn-outline-light">Dashboard</a>
                 <a href="{{ url_for('products.lookup') }}" class="btn btn-sm btn-outline-light">Scan</a>
                 <a href="{{ url_for('history.index') }}" class="btn btn-sm btn-outline-light">History</a>
                 {% if current_user.is_owner %}

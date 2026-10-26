@@ -43,7 +43,17 @@ class PriceService:
     def get_summary() -> dict:
         total_products = Product.query.count()
         total_changes = PriceHistory.query.count()
+        priced = Product.query.filter(Product.current_price.isnot(None)).count()
+        recent = (
+            PriceHistory.query
+            .order_by(PriceHistory.changed_at.desc())
+            .limit(10)
+            .all()
+        )
         return {
             'total_products': total_products,
             'total_price_changes': total_changes,
+            'products_with_price': priced,
+            'products_without_price': total_products - priced,
+            'recent_changes': [r.to_dict() for r in recent],
         }
